@@ -7,7 +7,31 @@
     <title>LikeAPhoto</title>
 </head>
 <body>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">LikeAPhoto</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars" aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
+        <div class="collapse navbar-collapse flex-row-reverse" id="navbars">
+            <form class="form-inline input-group col-4" id="navForm">
+                <input class="form-control" type="text" placeholder="Search" name="query">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="navFormSubmit">Go!</button>
+                </div>
+            </form>
+        </div>
+    </nav>
+    <main class="container-fluid">
+        <div class="jumbotron mt-3">
+            <form action="" class="input-group" id="mainForm">
+                <input type="text" class="form-control" placeholder="Search Photo">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button">Go!</button>
+                </div>
+            </form>
+        </div>
+    </main>
 <script src="js/jquery-3.4.1.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/script.js"></script>
