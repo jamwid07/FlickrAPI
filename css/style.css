@@ -2,3 +2,10 @@
     font-size: 32px;
     padding: 0 16px 7px;
 }
+
+.img-thumbnail {
+    object-fit: cover;
+    width: 100%;
+    height: calc(100%);
+    min-height: 150px;
+}

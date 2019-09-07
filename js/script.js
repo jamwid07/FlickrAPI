@@ -19,6 +19,17 @@ function searchFlickr(query) {
     })
 }
 
+function getInfo(photo_id) {
+    let photoInfoUrl = APIURL + '?format=json&nojsoncallback=1&method=flickr.photos.getInfo'
+        + '&api_key=' + APIKEY
+        + '&photo_id=' + photo_id;
+    $.get(photoInfoUrl, function (raw) {
+        if (raw.stat === 'ok') {
+            console.log(raw);
+        }
+    })
+}
+
 function parsePhoto(photos) {
     let imgTag;
     let photo;
@@ -26,9 +37,8 @@ function parsePhoto(photos) {
     for (let i in photos) {
         photo = photos[i];
         imgTag = '<figure class="figure col-12 col-sm-6 col-md-4 col-lg-2">';
-        imgTag += `<a href="#"><img
+        imgTag += `<a href="#" class="photoInfo" id="${photo.id}"><img
              src="https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_m.jpg"
-             style="object-fit: cover; width: 100%; height: calc(100%);"
              class="figure-img img-thumbnail">`;
         imgTag += '</a></figure>';
         image += imgTag;
@@ -51,7 +61,12 @@ $(document).ready(function () {
 
     $(document).on('click', '#more', function (e) {
         e.preventDefault();
-        console.log('button');
         searchFlickr(searchQuery);
+    });
+
+    $(document).on('click', '.photoInfo', function (e) {
+        e.preventDefault();
+        let photoId = $(this).attr('id');
+        getInfo(photoId);
     })
 });
