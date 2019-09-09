@@ -18,6 +18,7 @@ function searchFlickr(query) {
         parsePhoto(raw.photos.photo);
     }).done(function () {
         $('#loader').hide();
+        $(document).find('#more').removeAttr('disabled')
     })
 }
 
@@ -32,12 +33,10 @@ function getInfo(photo_id) {
             let table = modal.find('table');
             table.html('');
 
-            let src = 'https://farm' + image.farm + '.staticflickr.com/' + image.server + '/' + image.id + '_';
-            if (image.hasOwnProperty('originalsecret')) {
-                src += image.originalsecret + '_o.' + image.originalformat
-            } else {
-                src += image.secret + '.jpg'
-            }
+            let src = 'https://farm' + image.farm
+                + '.staticflickr.com/' + image.server
+                + '/' + image.id + '_'
+                + image.secret + '.jpg';
             modal.find('img').attr('src', src);
             modal.find('h3').text(image.title._content);
 
@@ -109,6 +108,7 @@ $(document).ready(function () {
 
     $(document).on('click', '#more', function (e) {
         e.preventDefault();
+        $(this).attr('disabled', true);
         searchFlickr(searchQuery);
     });
 
@@ -118,5 +118,8 @@ $(document).ready(function () {
         let loader = $('#loader div');
         $(this).append(loader);
         getInfo(photoId);
+    });
+    $('.modal').on('hidden.bs.modal', function () {
+        $(this).find('img').attr('src', 'images/loader.gif')
     })
 });
