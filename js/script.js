@@ -16,6 +16,8 @@ function searchFlickr(query) {
             $('main').prepend('<div class="row mt-3" id="total"><div class="col text-right">results found: ' + raw.photos.total + '</div></div>');
         }
         parsePhoto(raw.photos.photo);
+    }).done(function () {
+        $('#loader').hide();
     })
 }
 
@@ -23,10 +25,52 @@ function getInfo(photo_id) {
     let photoInfoUrl = APIURL + '?format=json&nojsoncallback=1&method=flickr.photos.getInfo'
         + '&api_key=' + APIKEY
         + '&photo_id=' + photo_id;
+    let modal = $('.modal');
     $.get(photoInfoUrl, function (raw) {
         if (raw.stat === 'ok') {
+            let image = raw.photo;
+            let table = modal.find('table');
+            table.html('');
+
+            let src = 'https://farm' + image.farm + '.staticflickr.com/' + image.server + '/' + image.id + '_';
+            if (image.hasOwnProperty('originalsecret')) {
+                src += image.originalsecret + '_o.' + image.originalformat
+            } else {
+                src += image.secret + '.jpg'
+            }
+            modal.find('img').attr('src', src);
+            modal.find('h3').text(image.title._content);
+
+            let dt = new Date(image.dates.posted * 1000);
+            let date = dt.getDay() + "/" + dt.getMonth() + "/" + dt.getFullYear();
+
+            let name = image.owner.realname ? image.owner.realname : image.owner.username;
+
+            table.append("<tr><th>Author</th><td>" + name + "</td></tr>");
+            table.append("<tr><th>Posted</th><td>" + date + "</td></tr>");
+
+            if (image.hasOwnProperty('location')) {
+                let loc = image.location;
+                table.append("<tr><th>Country</th><td>" + loc.country._content + "</td></tr>");
+                table.append("<tr><th>Region</th><td>" + loc.region._content + "</td></tr>");
+                table.append("<tr><th>City</th><td>" + loc.county._content + "</td></tr>");
+            }
+            if (image.tags.tag.length > 0) {
+                let tag = image.tags.tag;
+                let tagText = '';
+                for (i in tag) {
+                    tagText += tag[i]._content + ", ";
+                }
+                table.append("<tr><th>Tags</th><td>" + tagText.substr(0, (tagText.length - 2)) + "</td></tr>");
+
+            }
+            if (image.description._content !== "") {
+                table.append("<tr><th>Description</th><td>" + image.description._content + "</td></tr>")
+            }
             console.log(raw);
         }
+    }).done(function () {
+        modal.modal('show')
     })
 }
 
@@ -45,6 +89,8 @@ function parsePhoto(photos) {
     }
     $('main.container-fluid div#imageSet').append(image);
 }
+$('#loader').hide();
+
 $(document).ready(function () {
     $('#navForm, #mainForm').submit(function (e) {
         e.preventDefault();
@@ -54,6 +100,8 @@ $(document).ready(function () {
         e.preventDefault();
         searchQuery = $(this).parent().parent().find('input').val();
         let main = $('main.container-fluid');
+        $('#loader').show();
+        $('.modal').modal('hide');
         main.html('<div class="row mt-3" id="imageSet"></div>');
         searchFlickr(searchQuery);
         main.append('<div class="row mb-5"><div class="col-12 text-center"><button class="btn btn-primary rounded-circle" id="more">+</button></div></div>')
@@ -67,6 +115,8 @@ $(document).ready(function () {
     $(document).on('click', '.photoInfo', function (e) {
         e.preventDefault();
         let photoId = $(this).attr('id');
+        let loader = $('#loader div');
+        $(this).append(loader);
         getInfo(photoId);
     })
 });
